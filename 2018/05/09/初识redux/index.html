@@ -1,0 +1,344 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>初识Redux | YanKang&#39;s Notes | 凡人皆有一死</title>
+
+  
+  <meta name="author" content="YANKANG">
+  
+
+  
+  <meta name="description" content="说实话，懒了很久，虽然自己工作之余，也在零零碎碎的学习React相关的知识，不断的提高自己React Native ， React技术栈的能力，却也没有好好的总结反思。加上自己从事的是移动开发（Android 开发）。越是觉得有必要好好总结，巩固一下">
+  
+
+  
+  
+  <meta name="keywords" content="Redux">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="初识Redux">
+
+  <meta property="og:site_name" content="YanKang&#39;s Notes">
+
+  
+  <meta property="og:image" content="/favicon.ico">
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="YanKang&#39;s Notes" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">YANKANG</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">Home</a></li>
+            
+              <li><a href="/archives">Archives</a></li>
+            
+              <li><a href="/about">About</a></li>
+            
+              <li><a href="/tags">Tags</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>初识Redux</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2018/05/09/初识redux/" rel="bookmark">
+        <time class="entry-date published" datetime="2018-05-09T03:19:47.000Z">
+          2018-05-09
+        </time>
+      </a>
+    </span>
+    <br>
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <p>  说实话，懒了很久，虽然自己工作之余，也在零零碎碎的学习React相关的知识，不断的提高自己React Native ， React技术栈的能力，却也没有好好的总结反思。加上自己从事的是移动开发（Android 开发）。越是觉得有必要好好总结，巩固一下<a id="more"></a></p>
+<p>  懒还话多！！！</p>
+<p>###为什么需要Redux<br>多于大多数React应用，使用props , state足够处理简单的react app中组件直接的数据传递，配和context，我们可以解决大部分问题。</p>
+<p>但是，当你的项目的业务逻辑复杂到一定的程度，组件太多，需要管理更多不断变化的state，前面的方法就会显得很痛苦。Redux的出现就是为了解决复杂应用中状态管理混乱的问题。</p>
+<p>不过，对于简单的APP使用Redux是在无意义的增加开发复杂度。</p>
+<p>###Redux重要组成部分</p>
+<p>1、用户发出 Action操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">store.dispatch(action);</span><br></pre></td></tr></table></figure>
+<p>2、Store自动调用 Reducer方法。reducer方法（参数 state ，参数 action）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">count(state , action)&#123;</span><br><span class="line">    //根据不同action 返回不同的state</span><br><span class="line">    return state;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>3、State 发送改变后 ，Store 会触发监听函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">store.subscribe(listener);</span><br></pre></td></tr></table></figure>
+<p>4、listener 根据store得到改变后getState() ，state。重新render组件</p>
+<p>###Action<br>本质上是普通的javascript对象，它是将数据从组件传递到store的信使，很像Android中的intent。<br>它必须有type字段数据来表示action的操作类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const GUN_ADD = &apos;add_gun&apos;;</span><br><span class="line">&#123;</span><br><span class="line">    type: GUN_ADD,</span><br><span class="line">    count: 10</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>###Reducer<br>action指定了我们的行为（修改更新指定的数据），确没有具体说明具体我们应该如何去修改更新数据。<br>Reducers就是用来指定根据不同的action，来修改state数据逻辑的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">const ADD_GUN = &apos;add_gun&apos;;</span><br><span class="line">const REMOVE_GUN = &apos;remove_gun&apos;;</span><br><span class="line">export function counter(state = 0 , action)</span><br><span class="line">&#123;</span><br><span class="line">    if(action)</span><br><span class="line">        switch (action.type)</span><br><span class="line">        &#123;</span><br><span class="line">            case ADD_GUN:</span><br><span class="line">                return state + 1;</span><br><span class="line">            case REMOVE_GUN:</span><br><span class="line">                return state - 1 &gt;= 0 ? state - 1 : 0;</span><br><span class="line">            default:</span><br><span class="line">                return 10;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>###Store<br>将action和reducer联系起来。Redux应用只有一个单一的Store。可以有多个reducer.</p>
+<p>维持应用的 state；</p>
+<p>提供 getState() 方法获取 state，用于渲染组件；</p>
+<p>提供 dispatch(action) 方法操作更新 state；</p>
+<p>通过 subscribe(listener) 注册监听器;</p>
+<p>通过 subscribe(listener) 返回的函数注销监听器</p>
+<p>简单代码</p>
+<p>app.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import React, &#123; Component &#125; from &apos;react&apos;;</span><br><span class="line">import &apos;./App.css&apos;;</span><br><span class="line">class App extends Component</span><br><span class="line">&#123;</span><br><span class="line">  render()</span><br><span class="line">  &#123;</span><br><span class="line">        const store = this.props.store;</span><br><span class="line">        return (</span><br><span class="line">          &lt;div className=&quot;App&quot;&gt;</span><br><span class="line"></span><br><span class="line">现在拥有我们拥有重机枪 &#123;store.getState()&#125; 把</span><br><span class="line"></span><br><span class="line">              &lt;button onClick=&#123;() =&gt; store.dispatch(this.props.addGun())&#125;&gt;捡到重机枪&lt;/button&gt;</span><br><span class="line">              &lt;button onClick=&#123;() =&gt; store.dispatch(this.props.removeGun())&#125;&gt;丢掉重机枪&lt;/button&gt;</span><br><span class="line">          &lt;/div&gt;</span><br><span class="line">        );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">export default App;</span><br></pre></td></tr></table></figure>
+<p>index.redux.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">//action 类型</span><br><span class="line">const ADD_GUN = &apos;add_gun&apos;;</span><br><span class="line">const REMOVE_GUN = &apos;remove_gun&apos;;</span><br><span class="line">export function counter(state = 0 , action)</span><br><span class="line">&#123;</span><br><span class="line">    if(action)</span><br><span class="line">        switch (action.type)</span><br><span class="line">        &#123;</span><br><span class="line">            case ADD_GUN:</span><br><span class="line">                return state + 1;</span><br><span class="line">            case REMOVE_GUN:</span><br><span class="line">                return state - 1 &gt;= 0 ? state - 1 : 0;</span><br><span class="line">            default:</span><br><span class="line">                return 10;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">export function addGun()</span><br><span class="line">&#123;</span><br><span class="line">    return &#123;type : ADD_GUN&#125;;</span><br><span class="line">&#125;</span><br><span class="line">export function removeGun()</span><br><span class="line">&#123;</span><br><span class="line">    return &#123;type : REMOVE_GUN&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>index.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import React from &apos;react&apos;;</span><br><span class="line">import ReactDOM from &apos;react-dom&apos;;</span><br><span class="line">import &apos;./index.css&apos;;</span><br><span class="line">import App from &apos;./App&apos;;</span><br><span class="line">import registerServiceWorker from &apos;./registerServiceWorker&apos;;</span><br><span class="line">import &#123;counter , addGun , removeGun &#125; from &apos;./index.redux&apos;;</span><br><span class="line">import &#123;createStore&#125; from &apos;redux&apos;;</span><br><span class="line">let store = createStore(counter);</span><br><span class="line">const render = () =&gt; ReactDOM.render(</span><br><span class="line">    &lt;App store = &#123;store&#125;  addGun = &#123;addGun&#125; removeGun = &#123;removeGun&#125;/&gt;</span><br><span class="line">    , document.getElementById(&apos;root&apos;));</span><br><span class="line">registerServiceWorker();</span><br><span class="line">render();</span><br><span class="line">//注册监听</span><br><span class="line">store.subscribe(render);</span><br></pre></td></tr></table></figure>
+<p>总结<br>简单的使用了一下Redux , 介绍了Redux的一些基本概念。后续 Redux 中间件connect、Context传递store、以及封装更好的React-Redux的使用。</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/React/">React</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Redux/">Redux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    
+</div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = '初识Redux'
+		var GitHub_id = 'Boseny'
+		var client_id = 'f40c67d0359a2646d2b1'
+		var client_secret = '1cbedbd1a1a2e4b42901aee3d7afe1856c1b7e2d'
+		var repo = 'boseny.me'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    <br>
+    
+      
+        &copy; 2019 YANKANG
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('15')
+    let iconText = '❄️'
+    let color = 'black'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>

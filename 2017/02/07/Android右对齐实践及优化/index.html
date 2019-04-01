@@ -1,0 +1,353 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>Android右对齐布局实践及优化 | YanKang&#39;s Notes | 凡人皆有一死</title>
+
+  
+  <meta name="author" content="YANKANG">
+  
+
+  
+  <meta name="description" content="回想起去年做过的一个维语音乐平台，要求实现双语版本，汉语和维语。在维语版本中要求文字、控件，右对齐显示，我们都知道大部分语言都是左对齐，">
+  
+
+  
+  
+  <meta name="keywords" content="UI">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Android右对齐布局实践及优化">
+
+  <meta property="og:site_name" content="YanKang&#39;s Notes">
+
+  
+  <meta property="og:image" content="/favicon.ico">
+  
+  
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-5005349780815724",
+    enable_page_level_ads: true
+  });
+</script>
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?223eea22355699157e147870eb124b24";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="/favicon.ico" rel="icon">
+
+  <link rel="alternate" href="/atom.xml" title="YanKang&#39;s Notes" type="application/atom+xml">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    
+
+    <header class="header-container" style="background-image: url('/images/blog-bg.jpg');">
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header page-scroll">
+          <button type="button" id="tglBtn" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">YANKANG</a>
+        </div>
+        <div id="bosenyblog-navbar">
+          <div class="navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="/">Home</a></li>
+            
+              <li><a href="/archives">Archives</a></li>
+            
+              <li><a href="/about">About</a></li>
+            
+              <li><a href="/tags">Tags</a></li>
+            
+            </ul>
+          </div>
+        </div>
+
+    </div>
+ </nav>
+ <div class="gotop-btn">
+
+ </div>
+</header>
+
+        
+          <div class="container ">
+          <div class="row">
+            <main class="site-main posts-loop col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="position: inherit;">
+            <article class="article-container ">
+
+  
+    
+    <h3 class="article-title"><span>Android右对齐布局实践及优化</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/02/07/Android右对齐实践及优化/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-02-07T04:19:47.000Z">
+          2017-02-07
+        </time>
+      </a>
+    </span>
+    <br>
+    
+    <span id="busuanzi_container_page_pv">
+      本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+          <p>回想起去年做过的一个维语音乐平台，要求实现双语版本，汉语和维语。在维语版本中要求文字、控件，右对齐显示，我们都知道大部分语言都是左对齐，<a id="more"></a>android默认的对齐方式也是左对齐方式。而像维语和阿拉伯语这种语言都是右对齐的，即是从右往左读的。<br>  拿到这个问题我首先想到到的是自定义ViewGroup。233333~<br>  其实从Android 4.2 (api 17)开始 对rtl 提供了相应的支持。</p>
+<p>项目中的实际效果</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1959088-ed415ebf59a49f87.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<p>那我们来试一下吧~</p>
+<h4 id="相关配置"><a href="#相关配置" class="headerlink" title="相关配置"></a>相关配置</h4><ol>
+<li>minsdk 大于17</li>
+<li>manifest 文件中添加  android:supportsRtl=”true”</li>
+<li>使用  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;ImageView</span><br><span class="line">    android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">	android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">	android:scaleX=&quot;-1&quot; //反向</span><br><span class="line">	android:src=&quot;@drawable/ic_record_voice_over_blue_900_36dp&quot; /&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h4><ul>
+<li>ViewGroup 设置 android:layoutDirection=”rtl 或 trl”;</li>
+<li>TextView 内文字对齐方式 android:textAlignmen = “textEnd 或 textStart” 或  android:textDirection=”rtl 或 ltr”</li>
+</ul>
+<h4 id="特别的控件"><a href="#特别的控件" class="headerlink" title="特别的控件"></a>特别的控件</h4><p>imageview 右对齐</p>
+<p>viewpager 与 tablayout 右对齐，要求至右往左滑动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class RTLViewPager extends ViewPager &#123;</span><br><span class="line"></span><br><span class="line">    // direction</span><br><span class="line">    private boolean mIsRtlOriented;</span><br><span class="line"></span><br><span class="line">    public RTLViewPager(Context context)&#123;</span><br><span class="line">        this(context, null);</span><br><span class="line">    &#125;</span><br><span class="line">    public RTLViewPager(Context context, AttributeSet attrs)&#123;</span><br><span class="line">        super(context, attrs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //rtl 时设置当前页码  自定义属性修改更好</span><br><span class="line">    public void setRtlOriented(boolean isRtlOriented)&#123;</span><br><span class="line">        mIsRtlOriented = isRtlOriented;</span><br><span class="line">        if(mIsRtlOriented &amp;&amp; getAdapter() != null)&#123;</span><br><span class="line">            setCurrentItem(getAdapter().getCount() - 1 , false);</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            setCurrentItem(0 , false);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设置 adapter 数据反置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">public class CommonPagerAdapter extends FragmentStatePagerAdapter &#123;</span><br><span class="line">    private final List&lt;Fragment&gt; mFragments = new ArrayList&lt;&gt;();</span><br><span class="line">    private final List&lt;String&gt; mFragmentsTitles = new ArrayList&lt;&gt;();</span><br><span class="line">    private boolean mIsRtrl;</span><br><span class="line"></span><br><span class="line">    public CommonPagerAdapter(FragmentManager fm, boolean mIsRtrl) &#123;</span><br><span class="line">        super(fm);</span><br><span class="line">        this.mIsRtrl = mIsRtrl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void addFragment(Fragment fragment, String title) &#123;</span><br><span class="line">        mFragments.add(fragment);</span><br><span class="line">        mFragmentsTitles.add(title);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void clearFragment() &#123;</span><br><span class="line">        mFragments.clear();</span><br><span class="line">        mFragmentsTitles.clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Fragment getItem(int position) &#123;</span><br><span class="line">        if (mIsRtrl &amp;&amp; mFragments.size() &gt; 0) &#123;</span><br><span class="line">            return mFragments.get(mFragments.size() - position - 1);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return mFragments.get(position);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public int getCount() &#123;</span><br><span class="line">        return mFragments.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public CharSequence getPageTitle(int position) &#123;</span><br><span class="line">        if (mIsRtrl &amp;&amp; mFragmentsTitles.size() &gt; 0) &#123;</span><br><span class="line">            return mFragmentsTitles.get(mFragmentsTitles.size() - position - 1);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return mFragmentsTitles.get(position);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="完整布局代码"><a href="#完整布局代码" class="headerlink" title="完整布局代码"></a>完整布局代码</h4><p>汉语布局  activity_main.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;</span><br><span class="line">	android:id=&quot;@+id/activity_main&quot;</span><br><span class="line">	android:layout_width=&quot;match_parent&quot;</span><br><span class="line">	android:layout_height=&quot;match_parent&quot;</span><br><span class="line">	android:orientation=&quot;vertical&quot;&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;LinearLayout</span><br><span class="line">		android:layout_width=&quot;match_parent&quot;</span><br><span class="line">		android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">		android:background=&quot;#ffffff&quot;</span><br><span class="line">		android:orientation=&quot;horizontal&quot;&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;android.support.design.widget.TabLayout</span><br><span class="line">			android:id=&quot;@+id/act_tab&quot;</span><br><span class="line">			android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">			android:layout_height=&quot;48dp&quot;</span><br><span class="line">			app:layout_scrollFlags=&quot;scroll&quot;</span><br><span class="line">			app:tabIndicatorColor=&quot;@color/colorPrimary&quot;</span><br><span class="line">			app:tabIndicatorHeight=&quot;2dp&quot;</span><br><span class="line">			app:tabMode=&quot;scrollable&quot;</span><br><span class="line">			app:tabSelectedTextColor=&quot;#666666&quot;</span><br><span class="line">			app:tabTextColor=&quot;@android:color/darker_gray&quot;&gt;&lt;/android.support.design.widget.TabLayout&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;/LinearLayout&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;com.yankang.rtldemo.RTLViewPager</span><br><span class="line">		android:id=&quot;@+id/act_viewpager&quot;</span><br><span class="line">		android:layout_width=&quot;match_parent&quot;</span><br><span class="line">		android:layout_height=&quot;0dp&quot;</span><br><span class="line">		android:layout_weight=&quot;1&quot;&gt;&lt;/com.yankang.rtldemo.RTLViewPager&gt;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	&lt;Button</span><br><span class="line">		android:id=&quot;@+id/change_lang&quot;</span><br><span class="line">		android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">		android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">		android:text=&quot;@string/change_lang&quot; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/LinearLayout&gt;</span><br></pre></td></tr></table></figure>
+<p>维语布局  activity_main.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;</span><br><span class="line">	android:id=&quot;@+id/activity_main&quot;</span><br><span class="line">	android:layout_width=&quot;match_parent&quot;</span><br><span class="line">	android:layout_height=&quot;match_parent&quot;</span><br><span class="line">	android:layoutDirection=&quot;rtl&quot;</span><br><span class="line">	android:orientation=&quot;vertical&quot;&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;LinearLayout</span><br><span class="line">		android:layout_width=&quot;match_parent&quot;</span><br><span class="line">		android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">		android:background=&quot;#ffffff&quot;</span><br><span class="line">		android:orientation=&quot;horizontal&quot;&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;android.support.design.widget.TabLayout</span><br><span class="line">			android:id=&quot;@+id/act_tab&quot;</span><br><span class="line">			android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">			android:layout_height=&quot;48dp&quot;</span><br><span class="line">			android:layoutDirection=&quot;ltr&quot;</span><br><span class="line">			app:layout_scrollFlags=&quot;scroll&quot;</span><br><span class="line">			app:tabIndicatorColor=&quot;@color/colorPrimary&quot;</span><br><span class="line">			app:tabIndicatorHeight=&quot;2dp&quot;</span><br><span class="line">			app:tabMode=&quot;scrollable&quot;</span><br><span class="line">			app:tabSelectedTextColor=&quot;#666666&quot;</span><br><span class="line">			app:tabTextColor=&quot;@android:color/darker_gray&quot;&gt;&lt;/android.support.design.widget.TabLayout&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;/LinearLayout&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;com.yankang.rtldemo.RTLViewPager</span><br><span class="line">		android:id=&quot;@+id/act_viewpager&quot;</span><br><span class="line">		android:layout_width=&quot;match_parent&quot;</span><br><span class="line">		android:layout_height=&quot;0dp&quot;</span><br><span class="line">		android:layout_weight=&quot;1&quot;&gt;&lt;/com.yankang.rtldemo.RTLViewPager&gt;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	&lt;Button</span><br><span class="line">		android:id=&quot;@+id/change_lang&quot;</span><br><span class="line">		android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">		android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">		android:text=&quot;@string/change_lang&quot; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/LinearLayout&gt;</span><br></pre></td></tr></table></figure>
+<p>文件夹结构（rtl布局我放在 layout_en_rUS 下）<br><img src="http://upload-images.jianshu.io/upload_images/1959088-55449dac07153a1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<p><a href="https://github.com/CoderYanKang/AndroidRtlLayout" target="_blank" rel="noopener">以上源码地址</a></p>
+<hr>
+<p>好吧， 到这里我们基本实现了双语版本 ， 以及版本的切换。<br>但是 ，我们layout 多了一份 ， String.xml多了一份（这个无法避免），一方面需要同时维护两套布局，布局文件很多的情况下很不方便，另一方面也增大了app的大小。</p>
+<h3 id="布局优化"><a href="#布局优化" class="headerlink" title="布局优化"></a>布局优化</h3><p>使用databinding 简化布局<br>App字符串常量类 StringVaule.java</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">package com.yankang.rtldemo.Strings;</span><br><span class="line"></span><br><span class="line">import android.databinding.BaseObservable;</span><br><span class="line">import android.databinding.Bindable;</span><br><span class="line"></span><br><span class="line">import com.yankang.rtldemo.BR;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Created by yankang on 2017/1/8.</span><br><span class="line"> * app 字符串常量类</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">public class StringVaule extends BaseObservable &#123;</span><br><span class="line">    private boolean langType = false;</span><br><span class="line"></span><br><span class="line">    @Bindable</span><br><span class="line">    public boolean isLangType() &#123;</span><br><span class="line">        return langType;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setLangType(boolean langType) &#123;</span><br><span class="line">        this.langType = langType;</span><br><span class="line">        notifyPropertyChanged(BR.langType);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 文字</span><br><span class="line">    public final String btn = &quot;改变&quot;;</span><br><span class="line">    public final String _btn = &quot;change&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>activity_main.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;layout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;</span><br><span class="line">    </span><br><span class="line">	&lt;data&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;import type=&quot;com.yankang.rtldemo.Strings.StringVaule&quot; /&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;import type=&quot;android.view.View&quot; /&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;variable</span><br><span class="line">			name=&quot;string&quot;</span><br><span class="line">			type=&quot;StringVaule&quot; /&gt;</span><br><span class="line">	&lt;/data&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;LinearLayout xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;</span><br><span class="line">		android:id=&quot;@+id/activity_main&quot;</span><br><span class="line">		android:layout_width=&quot;match_parent&quot;</span><br><span class="line">		android:layout_height=&quot;match_parent&quot;</span><br><span class="line">		android:layoutDirection=&quot;@&#123;string.langType ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR&#125;&quot;</span><br><span class="line">		android:orientation=&quot;vertical&quot;&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;LinearLayout</span><br><span class="line">			android:layout_width=&quot;match_parent&quot;</span><br><span class="line">			android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">			android:background=&quot;#ffffff&quot;</span><br><span class="line">			android:orientation=&quot;horizontal&quot;&gt;</span><br><span class="line">			</span><br><span class="line">			&lt;android.support.design.widget.TabLayout</span><br><span class="line">				android:id=&quot;@+id/act_tab&quot;</span><br><span class="line">				android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">				android:layout_height=&quot;48dp&quot;</span><br><span class="line">				android:layoutDirection=&quot;ltr&quot;</span><br><span class="line">				app:layout_scrollFlags=&quot;scroll&quot;</span><br><span class="line">				app:tabIndicatorColor=&quot;@color/colorPrimary&quot;</span><br><span class="line">				app:tabIndicatorHeight=&quot;2dp&quot;</span><br><span class="line">				app:tabMode=&quot;scrollable&quot;</span><br><span class="line">				app:tabSelectedTextColor=&quot;#666666&quot;</span><br><span class="line">				app:tabTextColor=&quot;@android:color/darker_gray&quot;&gt;&lt;/android.support.design.widget.TabLayout&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;/LinearLayout&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;com.yankang.rtldemo.Widgets.RTLViewPager</span><br><span class="line">			android:id=&quot;@+id/act_viewpager&quot;</span><br><span class="line">			android:layout_width=&quot;match_parent&quot;</span><br><span class="line">			android:layout_height=&quot;0dp&quot;</span><br><span class="line">			android:layout_weight=&quot;1&quot;&gt;&lt;/com.yankang.rtldemo.Widgets.RTLViewPager&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;Button</span><br><span class="line">			android:id=&quot;@+id/change_lang&quot;</span><br><span class="line">			android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">			android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">			android:text=&quot;@&#123;string.langType ? string._btn : string.btn&#125;&quot; /&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;/LinearLayout&gt;</span><br><span class="line">&lt;/layout&gt;</span><br></pre></td></tr></table></figure>
+<p>RecycleView item list_item.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;layout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;data&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;import type=&quot;com.yankang.rtldemo.Strings.StringVaule&quot; /&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;import type=&quot;com.yankang.rtldemo.Model.Student&quot; /&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;variable</span><br><span class="line">			name=&quot;string&quot;</span><br><span class="line">			type=&quot;StringVaule&quot; /&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;variable</span><br><span class="line">			name=&quot;stu&quot;</span><br><span class="line">			type=&quot;Student&quot; /&gt;</span><br><span class="line">	&lt;/data&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;LinearLayout</span><br><span class="line">		android:layout_width=&quot;match_parent&quot;</span><br><span class="line">		android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">		android:orientation=&quot;horizontal&quot;&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;ImageView</span><br><span class="line">			android:layout_width=&quot;50dp&quot;</span><br><span class="line">			android:layout_height=&quot;50dp&quot;</span><br><span class="line">			android:layout_margin=&quot;15dp&quot;</span><br><span class="line">			android:scaleType=&quot;centerCrop&quot;</span><br><span class="line">			android:scaleX=&quot;@&#123;string.langType ? -1f : 1f&#125;&quot;</span><br><span class="line">			app:image=&quot;@&#123;stu.imageUrl&#125;&quot; /&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;LinearLayout</span><br><span class="line">			android:layout_width=&quot;0dp&quot;</span><br><span class="line">			android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">			android:layout_gravity=&quot;center&quot;</span><br><span class="line">			android:layout_weight=&quot;1&quot;</span><br><span class="line">			android:orientation=&quot;vertical&quot;&gt;</span><br><span class="line">			</span><br><span class="line">			&lt;TextView</span><br><span class="line">				android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">				android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">				android:text=&quot;@&#123;stu.name&#125;&quot; /&gt;</span><br><span class="line">			</span><br><span class="line">			&lt;TextView</span><br><span class="line">				android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">				android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">				android:layout_marginTop=&quot;10dp&quot;</span><br><span class="line">				android:text=&quot;@&#123;stu.gender&#125;&quot; /&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;/LinearLayout&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;ImageView</span><br><span class="line">			android:layout_width=&quot;wrap_content&quot;</span><br><span class="line">			android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">			android:layout_gravity=&quot;center_vertical&quot;</span><br><span class="line">			android:layout_marginEnd=&quot;10dp&quot;</span><br><span class="line">			android:scaleX=&quot;@&#123;string.langType ? -1f : 1f&#125;&quot;</span><br><span class="line">			android:src=&quot;@drawable/ic_keyboard_arrow_right_black_36dp&quot; /&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;/LinearLayout&gt;</span><br><span class="line"></span><br><span class="line">&lt;/layout&gt;</span><br></pre></td></tr></table></figure>
+<p>MainActivity.java</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">package com.yankang.rtldemo1;</span><br><span class="line"></span><br><span class="line">import android.content.Intent;</span><br><span class="line">import android.databinding.DataBindingUtil;</span><br><span class="line">import android.os.Bundle;</span><br><span class="line">import android.support.design.widget.TabLayout;</span><br><span class="line">import android.support.v4.app.Fragment;</span><br><span class="line">import android.support.v7.app.AppCompatActivity;</span><br><span class="line"></span><br><span class="line">import com.yankang.rtldemo1.Adapters.CommonPagerAdapter;</span><br><span class="line">import com.yankang.rtldemo1.Widgets.RTLViewPager;</span><br><span class="line">import com.yankang.rtldemo1.data.PreferManager;</span><br><span class="line">import com.yankang.rtldemo1.databinding.ActivityMainBinding;</span><br><span class="line"></span><br><span class="line">import butterknife.Bind;</span><br><span class="line">import butterknife.ButterKnife;</span><br><span class="line">import butterknife.OnClick;</span><br><span class="line"></span><br><span class="line">import static com.yankang.rtldemo1.App.stringVaule;</span><br><span class="line"></span><br><span class="line">public class MainActivity extends AppCompatActivity &#123;</span><br><span class="line"></span><br><span class="line">    @Bind(R.id.act_tab)</span><br><span class="line">    TabLayout actTab;</span><br><span class="line">    @Bind(R.id.act_viewpager)</span><br><span class="line">    RTLViewPager actViewpager;</span><br><span class="line"></span><br><span class="line">    private CommonPagerAdapter adapter;</span><br><span class="line"></span><br><span class="line">    private boolean isRtl = false;</span><br><span class="line">    private ActivityMainBinding binding;</span><br><span class="line">    private PreferManager preferManager;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onCreate(savedInstanceState);</span><br><span class="line">        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);</span><br><span class="line">        ButterKnife.bind(this);</span><br><span class="line">        initView();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    private void initView() &#123;</span><br><span class="line">        preferManager = PreferManager.getInstance(this);</span><br><span class="line">        binding.setString(App.stringVaule);</span><br><span class="line"></span><br><span class="line">        isRtl = preferManager.getLangType() == Constant.LANG_EN;</span><br><span class="line">        stringVaule.setLangType(isRtl);</span><br><span class="line"></span><br><span class="line">        adapter = new CommonPagerAdapter(getSupportFragmentManager(), isRtl);</span><br><span class="line"></span><br><span class="line">        for (int i = 0; i &lt; 3; i++) &#123;</span><br><span class="line">            Fragment fragment = new TestFragment();</span><br><span class="line">            adapter.addFragment(fragment, &quot;标签&quot; + i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        actTab.setupWithViewPager(actViewpager);</span><br><span class="line">        actViewpager.setAdapter(adapter);</span><br><span class="line">        actViewpager.setRtlOriented(isRtl);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @OnClick(R.id.change_lang)</span><br><span class="line">    public void change() &#123;</span><br><span class="line">        if (preferManager.getLangType() == Constant.LANG_EN) &#123;</span><br><span class="line">            preferManager.setLangType(Constant.LANG_ZH);</span><br><span class="line"></span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            preferManager.setLangType(Constant.LANG_EN);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        startActivity(new Intent(this, MainActivity.class));</span><br><span class="line">        finish();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RecycleView adapter 配置Databinding CommonAdapter.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yankang.rtldemo.Adapters;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.databinding.DataBindingUtil;</span><br><span class="line"><span class="keyword">import</span> android.databinding.ViewDataBinding;</span><br><span class="line"><span class="keyword">import</span> android.support.v7.widget.RecyclerView;</span><br><span class="line"><span class="keyword">import</span> android.view.LayoutInflater;</span><br><span class="line"><span class="keyword">import</span> android.view.View;</span><br><span class="line"><span class="keyword">import</span> android.view.ViewGroup;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.yankang.rtldemo.App;</span><br><span class="line"><span class="keyword">import</span> com.yankang.rtldemo.BR;</span><br><span class="line"><span class="keyword">import</span> com.yankang.rtldemo.Model.Student;</span><br><span class="line"><span class="keyword">import</span> com.yankang.rtldemo.R;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by yankang on 2017/1/8.</span></span><br><span class="line"><span class="comment"> * MVVM 在recycleview 中的应用</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CommonAdapter</span> <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">Adapter</span>&lt;<span class="title">CommonAdapter</span>.<span class="title">ViewHoler</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ArrayList&lt;Student&gt; mData = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CommonAdapter</span><span class="params">(ArrayList&lt;Student&gt; data)</span> </span>&#123;</span><br><span class="line">        mData.addAll(data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ViewHoler <span class="title">onCreateViewHolder</span><span class="params">(ViewGroup parent, <span class="keyword">int</span> viewType)</span> </span>&#123;</span><br><span class="line">        ViewDataBinding binding = DataBindingUtil.inflate(LayoutInflater</span><br><span class="line">                .from(parent.getContext()), R.layout.list_item, parent, <span class="keyword">false</span>);</span><br><span class="line">        ViewHoler holder = <span class="keyword">new</span> ViewHoler(binding.getRoot());</span><br><span class="line">        holder.setViewDataBinding(binding);</span><br><span class="line">        <span class="keyword">return</span> holder;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//设置数据</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBindViewHolder</span><span class="params">(ViewHoler holder, <span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//修改绑定数据</span></span><br><span class="line">        holder.getViewDataBinding().setVariable(BR.stu, mData.get(position));</span><br><span class="line">        holder.getViewDataBinding().setVariable(BR.string, App.stringVaule);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//刷新</span></span><br><span class="line">        holder.getViewDataBinding().executePendingBindings();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getItemCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mData.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">ViewHoler</span> <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">ViewHolder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> ViewDataBinding viewDataBinding;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ViewHoler</span><span class="params">(View itemView)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(itemView);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> ViewDataBinding <span class="title">getViewDataBinding</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> viewDataBinding;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setViewDataBinding</span><span class="params">(ViewDataBinding viewDataBinding)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.viewDataBinding = viewDataBinding;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/CoderYanKang/Android_RTL_DataBinding.git" target="_blank" rel="noopener">以上源码地址</a></p>
+<h3 id="实际效果"><a href="#实际效果" class="headerlink" title="实际效果"></a>实际效果</h3><h2 id><a href="#" class="headerlink" title></a><img src="http://upload-images.jianshu.io/upload_images/1959088-61d0d00622676dc0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></h2><p>使用DataBinding后，我们不用再维护多套布局 ， 极大的简化了代码。总体来说还是很简单的。</p>
+<p>end~</p>
+
+      
+    </div>
+    
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Android/">Android</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/UI/">UI</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+  
+    
+    
+  
+</article>
+   
+    <div id="toc" class="toc-article ">
+    <div class="toc-title">目录</div>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#相关配置"><span class="toc-number">1.</span> <span class="toc-text">相关配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#简单使用"><span class="toc-number">2.</span> <span class="toc-text">简单使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#特别的控件"><span class="toc-number">3.</span> <span class="toc-text">特别的控件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#完整布局代码"><span class="toc-number">4.</span> <span class="toc-text">完整布局代码</span></a></li></ol><li class="toc-item toc-level-3"><a class="toc-link" href="#布局优化"><span class="toc-number"></span> <span class="toc-text">布局优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实际效果"><span class="toc-number"></span> <span class="toc-text">实际效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#"><span class="toc-number"></span> <span class="toc-text"></span></a>
+</li></div>
+
+
+  
+
+	<!-- async load  -->
+	<script>
+			function async(u, c) {
+				var d = document, t = 'script',
+						o = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+				o.src = u;
+				if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+				s.parentNode.insertBefore(o, s);
+			}
+	</script>
+	<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+	<script>
+			async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+					anchors.options = {
+						visible: 'hover',
+						placement: 'left',
+						// icon: '#'
+					};
+					anchors.add().remove('.article-title').remove('.subheading').remove('.sidebar-container h5');
+			})
+	</script>
+	<style>
+			/* place left on bigger screen */
+			@media all and (min-width: 800px) {
+					.anchorjs-link{
+							position: absolute;
+							left: -0.75em;
+							font-size: 1.1em;
+							margin-top : -0.1em;
+					}
+			}
+	</style>
+
+
+
+
+<!-- UY BEGIN -->
+	<div id="gitment-container"></div>
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script src="/js/web-pinyin.js"></script>
+	<script>
+		function toUnicode(s){ 
+			return s.replace(/([\u4E00-\u9FA5]|[\uFE30-\uFFA0])/g,function(){
+			return "\\u" + RegExp["$1"].charCodeAt(0).toString(16);
+			});
+		}
+		var title = 'Android右对齐布局实践及优化'
+		var GitHub_id = 'Boseny'
+		var client_id = 'f40c67d0359a2646d2b1'
+		var client_secret = '1cbedbd1a1a2e4b42901aee3d7afe1856c1b7e2d'
+		var repo = 'boseny.me'
+		var gitment = new Gitment({
+		// id: '页面 ID', // 可选。默认为 location.href
+		// id:"11" ,
+		id: title,
+		title: title,
+		owner: GitHub_id,//'你的 GitHub ID',
+		repo: repo,//'存储评论的 repo',
+		oauth: {
+			client_id: client_id,//'你的 client ID',
+			client_secret: client_secret,//'你的 client secret',
+		},
+		})
+		gitment.render('gitment-container')
+	</script>
+<!-- UY END -->
+
+
+
+
+            </main>
+          </div>
+        </div>
+       
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/BosenY/Lap" target="_blank">Lap</a>
+    <br><span id="busuanzi_container_site_uv"> 
+  本站访客数<span id="busuanzi_value_site_uv"></span>人次
+</span>
+    <br>
+    
+      
+        &copy; 2019 YANKANG
+      
+    
+  </p>
+</footer>
+    
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-92842840-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+  </div>
+
+</div>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/draw-something/dist/draw.min.js"></script>
+  <script>
+    let maxNum = Number.parseInt('15')
+    let iconText = '❄️'
+    let color = 'black'
+    new Draw({maxNum, iconText, color})
+  </script>
+
+<script src="/js/index.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>
